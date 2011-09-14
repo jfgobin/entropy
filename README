@@ -1,0 +1,8 @@
+entropy.py
+----------
+
+One of my first cracks at python. This computes the entropy of a file or 
+a directory (then computes the entropy of each file) passed as an 
+argument.
+
+
