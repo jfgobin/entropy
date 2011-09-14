@@ -22,6 +22,7 @@ def Usage(execname):
 	return
 
 # Returns pr.log(pr) if pr>0, 0 otherwise
+# where 0<=pr<1
 
 def prlogpr(pr):
 	if pr==0:	
@@ -32,16 +33,21 @@ def ComputeFileEntropy(objname):
 	entropy=0
 	total=0.0;
 	frequency=[]
+	# Set each character's frequency to 0
 	for i in range(256):
 		frequency.append(0)
 	FILE=open(objname,"rb")
 	while FILE:
+		# Read byte by byte and increase the correspoding
+		# character's frequency
 		byte=FILE.read(1)
 		if len(byte)!=0:
 			frequency[ord(byte)]=frequency[ord(byte)]+1.0;
 			total=total+1.0
 		else:
 			break
+	# If we have anything, we'll compute the entropy.
+	# entropy=sum(i in I) -pr[i]*log(pr[i])
 	if total>0.0:
 		for i in range(256):
 			entropy=entropy-prlogpr(frequency[i]/total)
@@ -49,6 +55,7 @@ def ComputeFileEntropy(objname):
 		entropy=0
 	return entropy
 
+# Walkdir - if in dir mode, let's process each file
 def WalkDir(objname):
 	listofdir=[]
 	listoffiles=[]
@@ -103,9 +110,6 @@ def main(argv):
 	elif dirmode:
 		WalkDir(objname)
 	
-
-
-
 	return
 
 
