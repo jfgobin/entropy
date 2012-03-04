@@ -44,7 +44,9 @@ def ComputeFileEntropy(objname):
 	# Set each character's frequency to 0
 	for i in range(256):
 		frequency.append(0)
-	FILE=open(objname,"rb")
+	
+	try: FILE=open(objname,"rb")
+	except OSError:	return None
 	while FILE:
 		# Read byte by byte and increase the correspoding
 		# character's frequency
@@ -73,7 +75,8 @@ def WalkDir(objname,threshold):
 	listoffiles=[]
 	listofentropy=[]
 	# Get a list of the object in the current directory
-	listofitem=os.listdir(objname)
+	try: listofitem=os.listdir(objname)
+        except OSError: return 
 	for item in listofitem:
 		# Add the previous path to get a path relative to where the script was started
 		absitem=os.path.join(objname,item)
@@ -89,8 +92,9 @@ def WalkDir(objname,threshold):
 	# If no more subdirectory, let's compute and print the entropy of each file
 	for item in listoffiles:
 		cur_entropy=ComputeFileEntropy(item)
-		if cur_entropy >= threshold:
-			print item, " : ", cur_entropy
+		if cur_entropy is not None:
+			if cur_entropy >= threshold:
+				print item, " : ", cur_entropy
 	return
 
 # Test whether a number in a string is a floating point number
@@ -119,6 +123,7 @@ def main(argv):
 	if opts[0][0]=='-h':
 		Usage(argv[0])
 		sys.exit(0)
+	threshold=0.0
 	if opts[0][0]=='-t':
 		# A threshold value has been passed
 		if isfloat(opts[0][1]):
