@@ -4,6 +4,7 @@ import os,sys,getopt,math
 
 # Variables
 
+threshold=0.0
 dirmode=0
 filmode=0
 objname=""
@@ -13,9 +14,10 @@ objname=""
 
 # Prints the help page
 def Usage(execname):
-	print "Usage ",execname,": "
-	print "-"*(len(execname)+10)
-	print "\n"
+	print "Usage ",execname," -h | [-t Value] (-d Directory | -f Filename)"
+	print "\n\n"
+	print "-t <Value>       : (optional) specifies a minimal value for threshold."
+	print "                   Entropies below threshold are not displayed. Ignored for a single file."
 	print "-f <Filename>    : display the entropy of a single file"
 	print "-d <Directory>   : recursively display the entropy of all"
 	print "                   files starting at <Directory>\n\n"
@@ -64,7 +66,7 @@ def ComputeFileEntropy(objname):
 # The order is to descend the dir tree first and then print the files.
 # The function is used recursively to walk down the tree
 
-def WalkDir(objname):
+def WalkDir(objname,threshold):
 	listofdir=[]
 	listoffiles=[]
 	listofentropy=[]
@@ -81,11 +83,21 @@ def WalkDir(objname):
 			listofdir.append(absitem)
 	# And let's go down in each subdir
 	for item in listofdir:
-		WalkDir(item)
+		WalkDir(item,threshold)
 	# If no more subdirectory, let's compute and print the entropy of each file
 	for item in listoffiles:
-		print item," : ",ComputeFileEntropy(item)
+		cur_entropy=ComputeFileEntropy(item)
+		if cur_entropy >= threshold:
+			print item, " : ", cur_entropy
 	return
+
+# Test whether a number in a string is a floating point number
+# Returns True if so
+
+def isfloat(str):
+    try: float(str)
+    except ValueError: return False
+    return True
 
 # Main 
 
@@ -94,7 +106,7 @@ def main(argv):
 		Usage(argv[0])
 		sys.exit(-1)
 	try:
-		opts,args= getopt.getopt(argv[1:], "hf:d:", ["help", "file=", "directory="])
+		opts,args= getopt.getopt(argv[1:], "ht:f:d:", ["help", "thresh=", "file=", "directory="])
 	except:
 		Usage(argv[0])
 		sys.exit(-2)
@@ -105,14 +117,22 @@ def main(argv):
 	if opts[0][0]=='-h':
 		Usage(argv[0])
 		sys.exit(0)
-	elif opts[0][0]=='-d':
+	if opts[0][0]=='-t':
+		# A threshold value has been passed
+		if isfloat(opts[0][1]):
+		# Get the threshold and remove the argument
+			threshold=float(opts[0][1])
+			opts.pop(0)
+		else:
+		# Not a float ...
+			print "Error: -t requires a floating point value"
+			sys.exit(-1)
+	if opts[0][0]=='-d':
 		dirmode=1
 		objname=opts[0][1]
-		print "Dir Mode"
 	elif opts[0][0]=='-f':
 		filmode=1
 		objname=opts[0][1]
-		print "File Mode"
 	print "\n\n"
 	
 	if filmode:
@@ -120,7 +140,7 @@ def main(argv):
 		print objname," : ",entropy
 		sys.exit(0)
 	elif dirmode:
-		WalkDir(objname)
+		WalkDir(objname,threshold)
 	
 	return
 

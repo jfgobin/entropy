@@ -2,3 +2,5 @@
 ----------
 
 o Corrected a minor issue in the code, concerning the computation of pr.log(pr)
+o Added some comments
+o Added the "-t" option to specify a threshold
