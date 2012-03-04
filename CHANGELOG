@@ -1,0 +1,4 @@
+03-04-2012
+----------
+
+o Corrected a minor issue in the code, concerning the computation of pr.log(pr)

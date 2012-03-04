@@ -25,9 +25,9 @@ def Usage(execname):
 # where 0<=pr<1
 
 def prlogpr(pr):
-	if pr==0:	
-		return 0
-	return pr*math.log(pr) 
+	if pr > 0:	
+		return pr*math.log(pr)
+	return 0
 
 def ComputeFileEntropy(objname):
 	entropy=0
