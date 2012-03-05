@@ -46,7 +46,7 @@ def ComputeFileEntropy(objname):
 		frequency.append(0)
 	
 	try: FILE=open(objname,"rb")
-	except OSError:	return None
+	except IOError:	return None
 	while FILE:
 		# Read byte by byte and increase the correspoding
 		# character's frequency
